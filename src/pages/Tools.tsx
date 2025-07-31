@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,14 @@ import {
 
 const Tools = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const { toast } = useToast();
+
+  const handleToolAction = (toolName: string, action: string) => {
+    toast({
+      title: `${toolName}`,
+      description: `${action} feature coming soon! This will integrate with real GTA services.`,
+    });
+  };
 
   const toolCategories = [
     {
@@ -27,82 +36,82 @@ const Tools = () => {
       tools: [
         {
           icon: Bus,
-          name: "Transit Tracker",
-          description: "Real-time bus arrivals and route planning",
-          action: "Track Buses",
+          name: "GTA Transit Hub",
+          description: "Real-time TTC, GO Transit, and local bus arrivals",
+          action: "Track Transit",
           link: "#"
         },
         {
           icon: MapPin,
-          name: "Parking Finder",
-          description: "Find and pay for parking in downtown Brampton",
+          name: "Smart Parking",
+          description: "Find and pay for parking across Toronto, Mississauga, Brampton",
           action: "Find Parking",
           link: "#"
         },
       ]
     },
     {
-      title: "City Services",
+      title: "Municipal Services",
       color: "text-green-500",
       tools: [
         {
           icon: FileText,
-          name: "Permits & Licenses",
-          description: "Apply for building permits, business licenses",
+          name: "GTA Permits Hub",
+          description: "Apply for permits across GTA municipalities",
           action: "Apply Now",
           link: "#"
         },
         {
           icon: CreditCard,
-          name: "Pay Property Taxes",
-          description: "View and pay your property tax bills online",
+          name: "Property Tax Center",
+          description: "View and pay property taxes for any GTA city",
           action: "Pay Taxes",
           link: "#"
         },
         {
           icon: Calendar,
-          name: "Book Services",
-          description: "Schedule waste pickup, pool bookings, more",
-          action: "Book Now",
+          name: "Municipal Services",
+          description: "Book services across Toronto, Mississauga, Brampton",
+          action: "Book Services",
           link: "#"
         },
       ]
     },
     {
-      title: "Utilities & Calculators",
+      title: "Utilities & Tools",
       color: "text-purple-500",
       tools: [
         {
           icon: Calculator,
-          name: "Tax Calculator",
-          description: "Calculate property taxes and fees",
+          name: "GTA Cost Calculator",
+          description: "Calculate taxes, tolls, and fees across the region",
           action: "Calculate",
           link: "#"
         },
         {
           icon: Zap,
-          name: "Utility Bills",
-          description: "View and pay electricity, water, gas bills",
-          action: "View Bills",
+          name: "Utility Manager",
+          description: "Manage hydro, gas, and water bills region-wide",
+          action: "Manage Bills",
           link: "#"
         },
       ]
     },
     {
-      title: "Emergency & Contacts",
+      title: "Emergency & Support",
       color: "text-red-500",
       tools: [
         {
           icon: AlertCircle,
-          name: "Report Issues",
-          description: "Report potholes, broken streetlights, more",
-          action: "Report",
+          name: "Report Regional Issues",
+          description: "Report problems to the right municipality",
+          action: "Report Issue",
           link: "#"
         },
         {
           icon: Phone,
-          name: "Emergency Contacts",
-          description: "Important city and emergency numbers",
+          name: "GTA Emergency Guide",
+          description: "All emergency and municipal contact numbers",
           action: "View Contacts",
           link: "#"
         },
@@ -112,27 +121,27 @@ const Tools = () => {
 
   const quickServices = [
     {
-      name: "Brampton Transit",
-      hours: "5:00 AM - 1:00 AM",
-      phone: "(905) 874-2999",
+      name: "TTC Service",
+      hours: "24/7 on main lines",
+      phone: "(416) 393-4636",
       status: "Running normally"
     },
     {
-      name: "City Hall",
-      hours: "8:30 AM - 4:30 PM",
-      phone: "(905) 874-2000",
-      status: "Open"
+      name: "GO Transit",
+      hours: "5:00 AM - 1:30 AM",
+      phone: "(888) 438-6646",
+      status: "On schedule"
     },
     {
-      name: "Recreation Services",
-      hours: "6:00 AM - 11:00 PM",
-      phone: "(905) 874-2804",
-      status: "Open"
-    },
-    {
-      name: "311 Service",
+      name: "Toronto 311",
       hours: "24/7",
       phone: "311",
+      status: "Available"
+    },
+    {
+      name: "Peel Region 311",
+      hours: "24/7",
+      phone: "(905) 615-4311",
       status: "Available"
     }
   ];
@@ -151,10 +160,10 @@ const Tools = () => {
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            City <span className="bg-gradient-primary bg-clip-text text-transparent">Tools</span>
+            GTA <span className="bg-gradient-primary bg-clip-text text-transparent">Tools</span>
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Access Brampton's digital services, utilities, and helpful tools all in one place
+            Access digital services, utilities, and helpful tools across the Greater Toronto Area
           </p>
         </div>
 
@@ -237,7 +246,12 @@ const Tools = () => {
                           <h3 className="font-semibold mb-2">{tool.name}</h3>
                           <p className="text-sm text-muted-foreground mb-4">{tool.description}</p>
                           
-                          <Button variant="outline" size="sm" className="w-full">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full"
+                            onClick={() => handleToolAction(tool.name, tool.action)}
+                          >
                             {tool.action}
                             <ExternalLink className="h-3 w-3 ml-2" />
                           </Button>
@@ -279,7 +293,12 @@ const Tools = () => {
                 For emergencies, call 911. For non-emergency police, call (905) 453-2121
               </p>
             </div>
-            <Button variant="destructive" size="sm" className="ml-auto">
+            <Button 
+              variant="destructive" 
+              size="sm" 
+              className="ml-auto"
+              onClick={() => handleToolAction("Emergency Services", "View emergency information")}
+            >
               Emergency Info
             </Button>
           </div>

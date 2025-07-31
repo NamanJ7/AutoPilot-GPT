@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -15,57 +16,79 @@ import {
 } from "lucide-react";
 
 const Explore = () => {
+  const { toast } = useToast();
+
+  const handleDirections = (placeName: string) => {
+    toast({
+      title: "Getting Directions",
+      description: `Opening directions to ${placeName}...`,
+    });
+  };
+
+  const handleDetails = (placeName: string) => {
+    toast({
+      title: "Place Details",
+      description: `Loading detailed information for ${placeName}...`,
+    });
+  };
+
+  const handleQuickAction = (action: string) => {
+    toast({
+      title: `${action} Selected`,
+      description: `Finding the best ${action.toLowerCase()} in the GTA...`,
+    });
+  };
   const categories = [
-    { icon: Utensils, label: "Restaurants", count: 250, color: "text-orange-500" },
-    { icon: ShoppingBag, label: "Shopping", count: 180, color: "text-purple-500" },
-    { icon: TreePine, label: "Parks", count: 45, color: "text-green-500" },
-    { icon: Building, label: "Services", count: 120, color: "text-blue-500" },
+    { icon: Utensils, label: "Restaurants", count: 2800, color: "text-orange-500" },
+    { icon: ShoppingBag, label: "Shopping", count: 850, color: "text-purple-500" },
+    { icon: TreePine, label: "Parks", count: 180, color: "text-green-500" },
+    { icon: Building, label: "Services", count: 450, color: "text-blue-500" },
   ];
 
   const featuredPlaces = [
     {
       id: 1,
-      name: "Chinguacousy Park",
-      category: "Recreation",
-      rating: 4.8,
-      distance: "2.3 km",
-      image: "🏊‍♂️",
-      description: "Year-round recreation with pools, skiing, and ice skating",
-      hours: "6:00 AM - 11:00 PM",
-      phone: "(905) 874-2804"
+      name: "CN Tower",
+      category: "Attraction",
+      rating: 4.9,
+      distance: "Downtown Toronto",
+      image: "🗼",
+      description: "Iconic Toronto landmark with observation decks and dining",
+      hours: "9:00 AM - 10:30 PM",
+      phone: "(416) 868-6937"
     },
     {
       id: 2,
-      name: "Bramalea City Centre",
+      name: "Square One Shopping Centre",
       category: "Shopping",
       rating: 4.5,
-      distance: "1.8 km",
+      distance: "Mississauga",
       image: "🛍️",
-      description: "Premier shopping destination with 300+ stores",
+      description: "Ontario's largest shopping mall with 360+ stores",
       hours: "10:00 AM - 9:00 PM",
-      phone: "(905) 793-3330"
+      phone: "(905) 270-3860"
     },
     {
       id: 3,
-      name: "Rose Theatre Brampton",
-      category: "Entertainment",
+      name: "Casa Loma",
+      category: "Historic Site",
       rating: 4.7,
-      distance: "1.2 km",
-      image: "🎭",
-      description: "Professional theatre featuring musicals and live shows",
-      hours: "Box Office: 12:00 PM - 6:00 PM",
-      phone: "(905) 874-2800"
+      distance: "Toronto",
+      image: "🏰",
+      description: "Gothic Revival castle with beautiful gardens",
+      hours: "9:30 AM - 5:00 PM",
+      phone: "(416) 923-1171"
     },
     {
       id: 4,
-      name: "Gage Park",
-      category: "Parks",
+      name: "Centre Island Beach",
+      category: "Recreation",
       rating: 4.6,
-      distance: "0.8 km",
-      image: "🌹",
-      description: "Beautiful rose garden and peaceful walking trails",
+      distance: "Toronto Islands",
+      image: "🏖️",
+      description: "Sandy beach with stunning city skyline views",
       hours: "Dawn to Dusk",
-      phone: "311"
+      phone: "(416) 392-8186"
     }
   ];
 
@@ -82,10 +105,10 @@ const Explore = () => {
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            Explore <span className="bg-gradient-primary bg-clip-text text-transparent">Brampton</span>
+            Explore the <span className="bg-gradient-primary bg-clip-text text-transparent">GTA</span>
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Discover the best places, services, and attractions in your city
+            Discover the best places, services, and attractions across the Greater Toronto Area
           </p>
         </div>
 
@@ -94,7 +117,7 @@ const Explore = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-xl font-semibold mb-1">Current Weather</h3>
-              <p className="text-accent-foreground/80">Perfect day to explore Brampton!</p>
+              <p className="text-accent-foreground/80">Perfect day to explore the GTA!</p>
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold">{weatherInfo.temperature}</div>
@@ -182,11 +205,21 @@ const Explore = () => {
                   </div>
 
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="flex-1">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={() => handleDirections(place.name)}
+                    >
                       <MapPin className="h-4 w-4 mr-2" />
                       Directions
                     </Button>
-                    <Button variant="default" size="sm" className="flex-1">
+                    <Button 
+                      variant="default" 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={() => handleDetails(place.name)}
+                    >
                       <ExternalLink className="h-4 w-4 mr-2" />
                       Details
                     </Button>
@@ -201,21 +234,37 @@ const Explore = () => {
         <Card className="p-6">
           <h3 className="text-xl font-semibold mb-4">Quick Explore Actions</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Button variant="outline" className="h-auto p-4 flex flex-col gap-2">
+            <Button 
+              variant="outline" 
+              className="h-auto p-4 flex flex-col gap-2"
+              onClick={() => handleQuickAction("Photo Spots")}
+            >
               <Camera className="h-6 w-6" />
               <span className="text-sm">Photo Spots</span>
             </Button>
-            <Button variant="outline" className="h-auto p-4 flex flex-col gap-2">
+            <Button 
+              variant="outline" 
+              className="h-auto p-4 flex flex-col gap-2"
+              onClick={() => handleQuickAction("Best Eats")}
+            >
               <Utensils className="h-6 w-6" />
               <span className="text-sm">Best Eats</span>
             </Button>
-            <Button variant="outline" className="h-auto p-4 flex flex-col gap-2">
+            <Button 
+              variant="outline" 
+              className="h-auto p-4 flex flex-col gap-2"
+              onClick={() => handleQuickAction("Nature Trails")}
+            >
               <TreePine className="h-6 w-6" />
               <span className="text-sm">Nature Trails</span>
             </Button>
-            <Button variant="outline" className="h-auto p-4 flex flex-col gap-2">
+            <Button 
+              variant="outline" 
+              className="h-auto p-4 flex flex-col gap-2"
+              onClick={() => handleQuickAction("GTA Services")}
+            >
               <Building className="h-6 w-6" />
-              <span className="text-sm">City Services</span>
+              <span className="text-sm">GTA Services</span>
             </Button>
           </div>
         </Card>

@@ -25,14 +25,14 @@ const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      text: "Hi! I'm your Brampton assistant. I can help you with local services, transit, weather, directions, and much more. What would you like to know?",
+      text: "Hi! I'm your GTA navigation assistant. I can help you find the best routes, avoid traffic, and explain why I chose specific paths to get you to your destination faster and safer. Where would you like to go?",
       isUser: false,
       timestamp: new Date(),
       suggestions: [
-        "What's the weather like today?",
-        "Show me Brampton Transit routes",
-        "Find nearby restaurants",
-        "City hall hours and services"
+        "Best route from Toronto to Mississauga",
+        "Avoid highway traffic to Brampton",
+        "Fastest way to Pearson Airport",
+        "Alternative routes due to construction"
       ]
     }
   ]);
@@ -52,27 +52,45 @@ const Chat = () => {
   const generateResponse = (userMessage: string): string => {
     const message = userMessage.toLowerCase();
     
-    if (message.includes("weather")) {
-      return "🌤️ Today in Brampton: Partly cloudy, 22°C with light winds from the west. Perfect weather for a walk in Gage Park! Would you like the 7-day forecast?";
+    // Route planning and navigation
+    if (message.includes("toronto to mississauga") || message.includes("mississauga from toronto")) {
+      return "🚗 **Best Route: Toronto to Mississauga**\n\n**Recommended:** Take Highway 401 West → Exit at Hurontario St (Exit 344)\n\n**Why this route:**\n• ✅ Avoiding current construction on QEW near Sherway\n• ✅ Less congested than Gardiner → QEW route\n• ✅ 27-minute drive vs 35+ minutes via alternative routes\n• ⚠️ Watch for rush hour slowdowns at 427 interchange\n\n**Current conditions:** Light traffic, clear weather. Would you like real-time traffic updates?";
     }
     
-    if (message.includes("transit") || message.includes("bus")) {
-      return "🚌 Brampton Transit is running on schedule today. Popular routes include Route 1 (Main St), Route 5 (Dixie), and Züm lines. Would you like specific route information or real-time arrivals?";
+    if (message.includes("pearson airport") || message.includes("airport")) {
+      return "✈️ **Best Route to Pearson Airport**\n\n**Recommended:** Highway 427 North → Airport Road\n\n**Why I chose this route:**\n• ✅ Avoiding construction on Highway 409\n• ✅ 15% faster than Dixon Road route\n• ✅ Multiple parking options available\n• 🚨 Current delay: 5-min backup due to aircraft movements\n\n**Alternative:** If coming from east GTA, take 401 West → 427 North\n\nWould you like departure terminal information or parking recommendations?";
     }
     
-    if (message.includes("restaurant") || message.includes("food")) {
-      return "🍕 Great local spots near you: The Keg (steakhouse), Mandarin (buffet), Tim Hortons (coffee), and many ethnic cuisines on Queen St. What type of food are you craving?";
+    if (message.includes("brampton") && (message.includes("traffic") || message.includes("avoid"))) {
+      return "🚧 **Alternative Routes to Brampton**\n\n**Avoiding Highway 410 (Heavy Traffic)**\n\n**Best Alternative:** Take Highway 401 → Kennedy Road North\n\n**Why this works better:**\n• ✅ Bypassing 3-car accident at 410/Queen St\n• ✅ 12 minutes faster than Highway 410\n• ✅ Less construction zones\n• 🌧️ Rain starting soon - this route has better drainage\n\nCurrent travel time: 22 minutes. Want live updates during your drive?";
     }
     
-    if (message.includes("city hall") || message.includes("permit")) {
-      return "🏛️ Brampton City Hall is open Mon-Fri 8:30am-4:30pm. Services include permits, licenses, tax payments, and more. You can also access many services online at brampton.ca";
+    if (message.includes("construction") || message.includes("road work")) {
+      return "🚧 **Active Construction in GTA**\n\n**Major Impacts:**\n• Highway 401 eastbound - Lane closures at 400 interchange\n• QEW near Burlington - Reduced to 2 lanes\n• DVP southbound - Off-ramp at Bloor closed\n\n**Smart Detours:**\n• Use Highway 407 if traveling east-west (toll route but saves 20+ min)\n• Take surface streets like Dundas or Bloor for downtown access\n\nWhich specific area are you traveling to? I'll find the best construction-free route.";
     }
     
-    if (message.includes("park") || message.includes("recreation")) {
-      return "🌳 Brampton has amazing parks! Chinguacousy Park (skiing, pools), Gage Park (rose garden), and Heart Lake Conservation Area are popular. Which activities interest you?";
+    if (message.includes("weather") || message.includes("rain") || message.includes("snow")) {
+      return "🌤️ **Current GTA Weather Impact**\n\n**Today:** Light rain starting at 3 PM, temperature 18°C\n\n**Route Recommendations:**\n• ✅ Highways are safest - avoid Lakeshore routes (prone to flooding)\n• ⚠️ Reduced visibility expected on Highway 427 near airport\n• 🚗 Allow extra 10-15 minutes for wet road conditions\n\n**Best routes in rain:** Highway 401, Highway 404 (good drainage), avoid Highway 410 (construction + poor drainage)\n\nPlanning a trip? I can suggest weather-optimized routes.";
     }
     
-    return "I understand you're asking about '" + userMessage + "'. As your Brampton assistant, I can help with local services, directions, transit, weather, and city information. Could you be more specific about what you need?";
+    if (message.includes("fastest") || message.includes("quickest")) {
+      return "⚡ **Fastest Routes in GTA Right Now**\n\n**Top 3 Speed Options:**\n1. **Highway 407 Express** - Toll road, consistently fast\n2. **Highway 404 South** - Light traffic, well-maintained\n3. **Highway 401 Collectors** - Avoiding express lane congestion\n\n**Why these work:**\n• Real-time traffic optimization\n• Minimal construction interference\n• Better road surface conditions\n\nWhere are you headed? I'll calculate the absolute fastest route with current traffic data.";
+    }
+    
+    if (message.includes("accident") || message.includes("collision")) {
+      return "🚨 **Active Traffic Incidents**\n\n**Current Accidents:**\n• Highway 410 & Queen St - 3-vehicle collision, right lane blocked\n• DVP near Don Mills - Fender bender, cleared in 10 minutes\n• 401 at 427 - Stalled vehicle, tow truck en route\n\n**Detour Suggestions:**\n• Use Kennedy Road instead of Highway 410\n• Take Bayview Avenue instead of DVP\n• Consider Highway 407 to bypass 401/427 area\n\nNeed a specific route around any of these incidents?";
+    }
+    
+    if (message.includes("traffic") || message.includes("congestion")) {
+      return "🚦 **Current GTA Traffic Overview**\n\n**Heavy Traffic Areas:**\n• Highway 401 between 400 and 404 (rush hour backup)\n• QEW through Mississauga (ongoing construction)\n• Highway 410 northbound (accident-related)\n\n**Clear Routes:**\n• Highway 407 Express (toll road)\n• Highway 404 north of 401\n• Surface roads: Dundas, Bloor relatively clear\n\n**Smart timing:** Traffic typically clears after 7 PM on weekdays.\n\nWhere are you traveling? I'll find the clearest path.";
+    }
+    
+    // Default response with route focus
+    if (message.includes("route") || message.includes("direction") || message.includes("how to get")) {
+      return "🗺️ **Route Planning Assistant**\n\nI can help you find the best route anywhere in the GTA! I consider:\n\n• 🚨 Real-time traffic and accidents\n• 🚧 Construction and road closures\n• 🌧️ Weather conditions affecting driving\n• ⏱️ Time-of-day traffic patterns\n• 💰 Toll vs free route options\n\n**Just tell me:**\n• Where you're starting from\n• Where you need to go\n• If you want fastest, cheapest, or most scenic route\n\nExample: \"Best route from Markham to downtown Toronto avoiding construction\"";
+    }
+    
+    return `🤔 I'm not sure about "${userMessage}" specifically, but I'm your GTA navigation expert! I can help you with:\n\n• **Route planning** with real-time traffic\n• **Construction detours** and road closures\n• **Weather-optimized routes**\n• **Accident avoidance** and traffic updates\n• **Time-based recommendations** for any destination\n\nTry asking: "Best route to [destination]" or "How to avoid traffic to [location]"`;
   };
 
   const handleSendMessage = async () => {
@@ -97,12 +115,12 @@ const Chat = () => {
         text: responseText,
         isUser: false,
         timestamp: new Date(),
-        suggestions: [
-          "Tell me more",
-          "Show on map",
-          "Get directions",
-          "What else can you help with?"
-        ]
+          suggestions: [
+            "Show me alternatives",
+            "Real-time updates",
+            "Save this route",
+            "What about tolls?"
+          ]
       };
 
       setMessages(prev => [...prev, botMessage]);
@@ -130,10 +148,9 @@ const Chat = () => {
             <Bot className="h-8 w-8 text-primary-foreground" />
             <Sparkles className="h-6 w-6 text-primary-foreground animate-pulse" />
           </div>
-          <h1 className="text-3xl font-bold mb-2">Your Brampton Assistant</h1>
+          <h1 className="text-3xl font-bold mb-2">GTA Navigation Assistant</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Get instant help with local services, transit info, weather, directions, and city resources. 
-            I'm here to make your life in Brampton easier!
+            Get intelligent route planning across the Greater Toronto Area. I'll explain why I choose specific routes based on traffic, weather, and road conditions.
           </p>
         </div>
 
@@ -220,7 +237,7 @@ const Chat = () => {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask me anything about Brampton..."
+                placeholder="Where do you need to go in the GTA?"
                 className="flex-1"
               />
               <Button variant="ghost" size="icon" className="text-muted-foreground">
@@ -235,28 +252,40 @@ const Chat = () => {
 
         {/* Quick Actions */}
         <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 animate-fade-in">
-          <Card className="p-4 text-center hover:shadow-elegant transition-all duration-300 cursor-pointer">
+          <Card 
+            className="p-4 text-center hover:shadow-elegant transition-all duration-300 cursor-pointer"
+            onClick={() => handleSuggestionClick("Best route from Toronto to Mississauga")}
+          >
             <MapPin className="h-8 w-8 text-primary mx-auto mb-2" />
-            <h3 className="font-semibold text-sm">Directions</h3>
-            <p className="text-xs text-muted-foreground">Get around Brampton</p>
+            <h3 className="font-semibold text-sm">Smart Routes</h3>
+            <p className="text-xs text-muted-foreground">Traffic-optimized paths</p>
           </Card>
           
-          <Card className="p-4 text-center hover:shadow-elegant transition-all duration-300 cursor-pointer">
+          <Card 
+            className="p-4 text-center hover:shadow-elegant transition-all duration-300 cursor-pointer"
+            onClick={() => handleSuggestionClick("Current traffic conditions in GTA")}
+          >
             <Clock className="h-8 w-8 text-primary mx-auto mb-2" />
-            <h3 className="font-semibold text-sm">Transit</h3>
-            <p className="text-xs text-muted-foreground">Live bus times</p>
+            <h3 className="font-semibold text-sm">Live Traffic</h3>
+            <p className="text-xs text-muted-foreground">Real-time updates</p>
           </Card>
           
-          <Card className="p-4 text-center hover:shadow-elegant transition-all duration-300 cursor-pointer">
+          <Card 
+            className="p-4 text-center hover:shadow-elegant transition-all duration-300 cursor-pointer"
+            onClick={() => handleSuggestionClick("Show me construction detours")}
+          >
             <Navigation className="h-8 w-8 text-primary mx-auto mb-2" />
-            <h3 className="font-semibold text-sm">Services</h3>
-            <p className="text-xs text-muted-foreground">City resources</p>
+            <h3 className="font-semibold text-sm">Detours</h3>
+            <p className="text-xs text-muted-foreground">Avoid construction</p>
           </Card>
           
-          <Card className="p-4 text-center hover:shadow-elegant transition-all duration-300 cursor-pointer">
+          <Card 
+            className="p-4 text-center hover:shadow-elegant transition-all duration-300 cursor-pointer"
+            onClick={() => handleSuggestionClick("Fastest way to Pearson Airport")}
+          >
             <Sparkles className="h-8 w-8 text-primary mx-auto mb-2" />
-            <h3 className="font-semibold text-sm">Explore</h3>
-            <p className="text-xs text-muted-foreground">Discover local spots</p>
+            <h3 className="font-semibold text-sm">Airport</h3>
+            <p className="text-xs text-muted-foreground">Quick airport routes</p>
           </Card>
         </div>
       </div>

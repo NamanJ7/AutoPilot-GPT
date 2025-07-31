@@ -17,7 +17,7 @@ const Navigation = () => {
 
   const navItems = [
     { path: "/", icon: MessageCircle, label: "Chat", description: "Talk to your AI assistant" },
-    { path: "/explore", icon: Compass, label: "Explore", description: "Discover Brampton" },
+    { path: "/explore", icon: Compass, label: "Explore", description: "Discover the GTA" },
     { path: "/tools", icon: Wrench, label: "Tools", description: "Utilities & services" },
     { path: "/settings", icon: Settings, label: "Settings", description: "Customize your experience" },
   ];
@@ -39,7 +39,7 @@ const Navigation = () => {
                 <h1 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
                   AutoPilotGPT
                 </h1>
-                <p className="text-xs text-muted-foreground">Brampton Assistant</p>
+                <p className="text-xs text-muted-foreground">GTA Navigation Assistant</p>
               </div>
             </Link>
 
