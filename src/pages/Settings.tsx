@@ -30,6 +30,12 @@ const Settings = () => {
     location: "Brampton, ON"
   });
 
+  const [profile, setProfile] = useState({
+    name: "GTA Resident",
+    email: "user@example.com",
+    phone: "+1 (905) 555-0123"
+  });
+
   const settingSections = [
     {
       title: "Profile",
@@ -38,20 +44,23 @@ const Settings = () => {
         {
           label: "Display Name",
           type: "input",
-          value: "Brampton Resident",
-          description: "How you'd like to be addressed"
+          value: profile.name,
+          description: "How you'd like to be addressed",
+          onChange: (value: string) => setProfile(prev => ({ ...prev, name: value }))
         },
         {
           label: "Email",
           type: "input",
-          value: "user@example.com",
-          description: "For important notifications and updates"
+          value: profile.email,
+          description: "For important notifications and updates",
+          onChange: (value: string) => setProfile(prev => ({ ...prev, email: value }))
         },
         {
           label: "Phone",
           type: "input",
-          value: "+1 (905) 555-0123",
-          description: "For emergency alerts and SMS updates"
+          value: profile.phone,
+          description: "For emergency alerts and SMS updates",
+          onChange: (value: string) => setProfile(prev => ({ ...prev, phone: value }))
         }
       ]
     },
@@ -191,6 +200,7 @@ const Settings = () => {
                         {item.type === "input" && (
                           <Input
                             value={item.value as string}
+                            onChange={(e) => item.onChange?.(e.target.value)}
                             className="w-48"
                             placeholder={item.label}
                           />

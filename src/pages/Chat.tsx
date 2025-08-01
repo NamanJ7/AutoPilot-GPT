@@ -49,6 +49,44 @@ const Chat = () => {
     scrollToBottom();
   }, [messages]);
 
+  useEffect(() => {
+    // Check for URL parameters on page load
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryParam = urlParams.get('q');
+    if (queryParam) {
+      setInputValue(decodeURIComponent(queryParam));
+      // Auto-send the message after a brief delay
+      setTimeout(() => {
+        const userMessage: Message = {
+          id: Date.now().toString(),
+          text: decodeURIComponent(queryParam),
+          isUser: true,
+          timestamp: new Date()
+        };
+        
+        setMessages(prev => [...prev, userMessage]);
+        setIsTyping(true);
+        
+        setTimeout(() => {
+          const responseText = generateResponse(decodeURIComponent(queryParam).toLowerCase());
+          const botMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            text: responseText,
+            isUser: false,
+            timestamp: new Date(),
+            suggestions: getSuggestions(decodeURIComponent(queryParam))
+          };
+          
+          setMessages(prev => [...prev, botMessage]);
+          setIsTyping(false);
+        }, 1200);
+        
+        // Clear URL parameter
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }, 500);
+    }
+  }, []);
+
   const generateRouteResponse = (from: string, to: string): string => {
     // Normalize location names
     const normalizeLocation = (location: string) => {
@@ -194,28 +232,40 @@ const Chat = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = inputValue;
     setInputValue("");
     setIsTyping(true);
 
-    // Simulate AI response delay
+    // Enhanced response with more realistic routing
     setTimeout(() => {
-      const responseText = generateResponse(inputValue);
+      const responseText = generateEnhancedResponse(currentInput);
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: responseText,
         isUser: false,
         timestamp: new Date(),
-          suggestions: [
-            "Show me alternatives",
-            "Real-time updates",
-            "Save this route",
-            "What about tolls?"
-          ]
+        suggestions: getSuggestions(currentInput)
       };
 
       setMessages(prev => [...prev, botMessage]);
       setIsTyping(false);
-    }, 1500);
+    }, 1200);
+  };
+
+  const getSuggestions = (input: string): string[] => {
+    if (input.toLowerCase().includes("route") || input.toLowerCase().includes("to")) {
+      return ["Show alternatives", "Avoid tolls", "Real-time traffic", "Save route"];
+    }
+    return ["Best routes", "Traffic updates", "Weather impact", "Construction alerts"];
+  };
+
+  const generateEnhancedResponse = (input: string): string => {
+    // Try URL parameters first (from Explore page)
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryParam = urlParams.get('q');
+    const message = queryParam || input;
+    
+    return generateResponse(message.toLowerCase());
   };
 
   const handleSuggestionClick = (suggestion: string) => {

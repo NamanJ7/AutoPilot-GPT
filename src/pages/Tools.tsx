@@ -23,10 +23,38 @@ const Tools = () => {
   const { toast } = useToast();
 
   const handleToolAction = (toolName: string, action: string) => {
-    toast({
-      title: `${toolName}`,
-      description: `${action} feature coming soon! This will integrate with real GTA services.`,
-    });
+    // Route to real services based on tool type
+    const serviceUrls: { [key: string]: string } = {
+      "GTA Transit Hub": "https://www.ttc.ca/",
+      "Smart Parking": "https://www.greenp.com/",
+      "GTA Permits Hub": "https://www.toronto.ca/services-payments/permits-licences-bylaws/",
+      "Property Tax Center": "https://www.toronto.ca/services-payments/property-taxes-utilities/",
+      "Municipal Services": "https://www.toronto.ca/home/311-toronto-at-your-service/",
+      "GTA Cost Calculator": "/?q=Calculate%20GTA%20costs%20taxes%20tolls",
+      "Utility Manager": "https://www.torontohydro.com/",
+      "Report Regional Issues": "https://www.toronto.ca/home/311-toronto-at-your-service/",
+      "GTA Emergency Guide": "/?q=Emergency%20contacts%20GTA%20municipalities"
+    };
+
+    const url = serviceUrls[toolName];
+    if (url) {
+      if (url.startsWith('http')) {
+        window.open(url, '_blank');
+      } else {
+        window.location.href = url;
+      }
+      
+      toast({
+        title: `${toolName}`,
+        description: `Opening ${action.toLowerCase()} service...`,
+      });
+    } else {
+      toast({
+        title: `${toolName}`,
+        description: `${action} feature in development. Redirecting to general info...`,
+      });
+      window.location.href = `/?q=${encodeURIComponent(toolName + " " + action)}`;
+    }
   };
 
   const toolCategories = [

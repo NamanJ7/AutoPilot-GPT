@@ -19,23 +19,37 @@ const Explore = () => {
   const { toast } = useToast();
 
   const handleDirections = (placeName: string) => {
+    // Open Google Maps directions to the place
+    const destination = encodeURIComponent(`${placeName}, Toronto, ON, Canada`);
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
+    window.open(mapsUrl, '_blank');
+    
     toast({
-      title: "Getting Directions",
-      description: `Opening directions to ${placeName}...`,
+      title: "Opening Directions",
+      description: `Navigating to ${placeName} in Google Maps...`,
     });
   };
 
   const handleDetails = (placeName: string) => {
+    // Search for the place on Google
+    const searchQuery = encodeURIComponent(`${placeName} Toronto GTA information hours reviews`);
+    const searchUrl = `https://www.google.com/search?q=${searchQuery}`;
+    window.open(searchUrl, '_blank');
+    
     toast({
       title: "Place Details",
-      description: `Loading detailed information for ${placeName}...`,
+      description: `Opening detailed information for ${placeName}...`,
     });
   };
 
   const handleQuickAction = (action: string) => {
+    // Navigate to chat with pre-filled message
+    const searchQuery = encodeURIComponent(`Find the best ${action.toLowerCase()} in the GTA`);
+    window.location.href = `/?q=${searchQuery}`;
+    
     toast({
-      title: `${action} Selected`,
-      description: `Finding the best ${action.toLowerCase()} in the GTA...`,
+      title: `${action} Search`,
+      description: `Starting search for the best ${action.toLowerCase()} in the GTA...`,
     });
   };
   const categories = [
