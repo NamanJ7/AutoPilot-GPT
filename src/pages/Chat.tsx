@@ -49,20 +49,110 @@ const Chat = () => {
     scrollToBottom();
   }, [messages]);
 
+  const generateRouteResponse = (from: string, to: string): string => {
+    // Normalize location names
+    const normalizeLocation = (location: string) => {
+      return location.toLowerCase()
+        .replace(/\b(downtown|dt)\b/g, "toronto")
+        .replace(/\b(toronto)\b/g, "toronto")
+        .replace(/\b(mississauga|sauga)\b/g, "mississauga")
+        .replace(/\b(brampton)\b/g, "brampton")
+        .replace(/\b(oakville)\b/g, "oakville")
+        .replace(/\b(burlington)\b/g, "burlington")
+        .replace(/\b(hamilton)\b/g, "hamilton")
+        .replace(/\b(markham)\b/g, "markham")
+        .replace(/\b(richmond hill)\b/g, "richmond hill")
+        .replace(/\b(vaughan)\b/g, "vaughan")
+        .replace(/\b(pickering)\b/g, "pickering")
+        .replace(/\b(ajax)\b/g, "ajax")
+        .replace(/\b(whitby)\b/g, "whitby")
+        .replace(/\b(oshawa)\b/g, "oshawa")
+        .trim();
+    };
+
+    const fromNorm = normalizeLocation(from);
+    const toNorm = normalizeLocation(to);
+
+    // Generate realistic route responses with reasons
+    const routes = {
+      [`${fromNorm}_${toNorm}`]: generateSpecificRoute(fromNorm, toNorm),
+      [`${toNorm}_${fromNorm}`]: generateSpecificRoute(toNorm, fromNorm) // Handle reverse direction
+    };
+
+    return routes[`${fromNorm}_${toNorm}`] || 
+           routes[`${toNorm}_${fromNorm}`] || 
+           generateGenericRoute(from, to);
+  };
+
+  const generateSpecificRoute = (from: string, to: string): string => {
+    // Real GTA route combinations with intelligent reasoning
+    const routeMap: { [key: string]: string } = {
+      "mississauga_oakville": "🚗 **Best Route: Mississauga to Oakville**\n\n**Recommended:** QEW West → Exit at Trafalgar Road (Exit 109)\n\n**Why this route:**\n• ✅ Avoiding construction on Lakeshore Road\n• ✅ QEW has better traffic flow than surface streets\n• ✅ 18-minute drive vs 25+ minutes via Dundas Street\n• ⚠️ Watch for rush hour backup near Sheridan College\n\n**Current conditions:** Light traffic, clear weather. Estimated time: 18 minutes.",
+      
+      "toronto_mississauga": "🚗 **Best Route: Toronto to Mississauga**\n\n**Recommended:** Gardiner Expressway West → QEW West → Exit at Hurontario St\n\n**Why this route:**\n• ✅ Fastest highway connection available\n• ✅ Avoiding construction on Highway 427\n• ✅ 28-minute drive vs 40+ minutes via surface roads\n• 🚨 Minor delay: 3-vehicle accident cleared at Islington\n\n**Current conditions:** Moderate traffic, estimated time: 28 minutes.",
+      
+      "brampton_toronto": "🚗 **Best Route: Brampton to Toronto**\n\n**Recommended:** Highway 410 South → Highway 401 East → DVP South\n\n**Why this route:**\n• ✅ Most direct highway route to downtown\n• ✅ Avoiding construction on Highway 427\n• ✅ 35-minute drive vs 50+ minutes via surface streets\n• ⚠️ Rush hour congestion expected at 401/DVP interchange\n\n**Current conditions:** Heavy traffic during peak hours, estimated time: 35-45 minutes.",
+      
+      "markham_toronto": "🚗 **Best Route: Markham to Toronto**\n\n**Recommended:** Highway 404 South → DVP South → Gardiner Expressway\n\n**Why this route:**\n• ✅ Direct highway access to downtown core\n• ✅ Less congested than Highway 401 route\n• ✅ 32-minute drive vs 45+ minutes via Don Mills Road\n• 🌧️ Weather advisory: Light rain, allow extra 5 minutes\n\n**Current conditions:** Moderate traffic, estimated time: 32 minutes.",
+      
+      "hamilton_toronto": "🚗 **Best Route: Hamilton to Toronto**\n\n**Recommended:** QEW East → Gardiner Expressway → DVP North\n\n**Why this route:**\n• ✅ Major highway corridor, most reliable\n• ✅ Avoiding construction on Highway 403\n• ✅ 55-minute drive vs 75+ minutes via Highway 6\n• 🚧 Construction zone: Lane reduction near Burlington Skyway\n\n**Current conditions:** Moderate traffic, construction delays possible. Estimated time: 55-65 minutes.",
+      
+      "vaughan_toronto": "🚗 **Best Route: Vaughan to Toronto**\n\n**Recommended:** Highway 400 South → Highway 401 East → DVP South\n\n**Why this route:**\n• ✅ Major highway system, consistent speeds\n• ✅ Avoiding congestion on Yonge Street\n• ✅ 38-minute drive vs 55+ minutes via surface roads\n• ⚠️ Peak hour bottleneck at 400/401 interchange\n\n**Current conditions:** Moderate to heavy traffic, estimated time: 38-48 minutes.",
+      
+      "oakville_toronto": "🚗 **Best Route: Oakville to Toronto**\n\n**Recommended:** QEW East → Gardiner Expressway → DVP or Lakeshore\n\n**Why this route:**\n• ✅ Direct highway access to downtown\n• ✅ Bypassing local traffic in Mississauga\n• ✅ 35-minute drive vs 50+ minutes via Dundas Street\n• 🚨 Accident cleared: Minor delay near Sherway Gardens\n\n**Current conditions:** Light to moderate traffic, estimated time: 35 minutes."
+    };
+
+    return routeMap[`${from}_${to}`] || "";
+  };
+
+  const generateGenericRoute = (from: string, to: string): string => {
+    // Fallback for any location combination
+    const reasons = [
+      "Avoiding current construction zones",
+      "Bypassing heavy traffic on alternate routes", 
+      "Weather-optimized for current conditions",
+      "Fastest highway connections available",
+      "Avoiding accident-related delays"
+    ];
+    
+    const randomReason = reasons[Math.floor(Math.random() * reasons.length)];
+    const estimatedTime = Math.floor(Math.random() * 30) + 15; // 15-45 minutes
+    
+    return `🚗 **Best Route: ${from.charAt(0).toUpperCase() + from.slice(1)} to ${to.charAt(0).toUpperCase() + to.slice(1)}**\n\n**Recommended Route Found**\n\n**Why this route:**\n• ✅ ${randomReason}\n• ✅ Optimal highway and surface street combination\n• ✅ Real-time traffic consideration\n• ⏱️ Estimated travel time: ${estimatedTime} minutes\n\n**Current conditions:** Analyzing live traffic data for your route.\n\nWould you like alternative routes or real-time traffic updates?`;
+  };
+
   const generateResponse = (userMessage: string): string => {
     const message = userMessage.toLowerCase();
     
-    // Route planning and navigation
-    if (message.includes("toronto to mississauga") || message.includes("mississauga from toronto")) {
-      return "🚗 **Best Route: Toronto to Mississauga**\n\n**Recommended:** Take Highway 401 West → Exit at Hurontario St (Exit 344)\n\n**Why this route:**\n• ✅ Avoiding current construction on QEW near Sherway\n• ✅ Less congested than Gardiner → QEW route\n• ✅ 27-minute drive vs 35+ minutes via alternative routes\n• ⚠️ Watch for rush hour slowdowns at 427 interchange\n\n**Current conditions:** Light traffic, clear weather. Would you like real-time traffic updates?";
+    // Extract location patterns more intelligently
+    const locationPatterns = [
+      /(?:from\s+)?(.+?)\s+to\s+(.+?)(?:\s|$)/i,
+      /(?:route\s+)?(?:from\s+)?(.+?)\s+(?:to\s+|→\s+)(.+?)(?:\s|$)/i,
+      /(?:going\s+)?(?:from\s+)?(.+?)\s+(?:→|->)\s+(.+?)(?:\s|$)/i,
+      /(?:drive\s+)?(?:from\s+)?(.+?)\s+(?:towards?|heading\s+to)\s+(.+?)(?:\s|$)/i
+    ];
+    
+    let fromLocation = "";
+    let toLocation = "";
+    
+    // Try to match location patterns
+    for (const pattern of locationPatterns) {
+      const match = message.match(pattern);
+      if (match && match[1] && match[2]) {
+        fromLocation = match[1].trim();
+        toLocation = match[2].trim();
+        break;
+      }
     }
     
-    if (message.includes("pearson airport") || message.includes("airport")) {
+    // Generate intelligent route responses for any location pair
+    if (fromLocation && toLocation) {
+      return generateRouteResponse(fromLocation, toLocation);
+    }
+    
+    // Specific location queries
+    if (message.includes("pearson airport") || message.includes("airport") || message.includes("yyz")) {
       return "✈️ **Best Route to Pearson Airport**\n\n**Recommended:** Highway 427 North → Airport Road\n\n**Why I chose this route:**\n• ✅ Avoiding construction on Highway 409\n• ✅ 15% faster than Dixon Road route\n• ✅ Multiple parking options available\n• 🚨 Current delay: 5-min backup due to aircraft movements\n\n**Alternative:** If coming from east GTA, take 401 West → 427 North\n\nWould you like departure terminal information or parking recommendations?";
-    }
-    
-    if (message.includes("brampton") && (message.includes("traffic") || message.includes("avoid"))) {
-      return "🚧 **Alternative Routes to Brampton**\n\n**Avoiding Highway 410 (Heavy Traffic)**\n\n**Best Alternative:** Take Highway 401 → Kennedy Road North\n\n**Why this works better:**\n• ✅ Bypassing 3-car accident at 410/Queen St\n• ✅ 12 minutes faster than Highway 410\n• ✅ Less construction zones\n• 🌧️ Rain starting soon - this route has better drainage\n\nCurrent travel time: 22 minutes. Want live updates during your drive?";
     }
     
     if (message.includes("construction") || message.includes("road work")) {
