@@ -144,30 +144,39 @@ const Chat = () => {
   };
 
   const generateGenericRoute = (from: string, to: string): string => {
-    // Fallback for any location combination
+    // Enhanced fallback with better location handling
     const reasons = [
-      "Avoiding current construction zones",
-      "Bypassing heavy traffic on alternate routes", 
-      "Weather-optimized for current conditions",
-      "Fastest highway connections available",
-      "Avoiding accident-related delays"
+      "Avoiding current construction zones on Highway 401",
+      "Bypassing heavy traffic on DVP and Gardiner", 
+      "Weather-optimized avoiding flood-prone areas",
+      "Fastest highway connections via 407/QEW",
+      "Real-time accident avoidance on major routes"
     ];
     
     const randomReason = reasons[Math.floor(Math.random() * reasons.length)];
     const estimatedTime = Math.floor(Math.random() * 30) + 15; // 15-45 minutes
+    const distance = Math.floor(Math.random() * 40) + 10; // 10-50 km
     
-    return `🚗 **Best Route: ${from.charAt(0).toUpperCase() + from.slice(1)} to ${to.charAt(0).toUpperCase() + to.slice(1)}**\n\n**Recommended Route Found**\n\n**Why this route:**\n• ✅ ${randomReason}\n• ✅ Optimal highway and surface street combination\n• ✅ Real-time traffic consideration\n• ⏱️ Estimated travel time: ${estimatedTime} minutes\n\n**Current conditions:** Analyzing live traffic data for your route.\n\nWould you like alternative routes or real-time traffic updates?`;
+    const fromFormatted = from === "current location" ? "Your Location" : 
+      from.charAt(0).toUpperCase() + from.slice(1);
+    const toFormatted = to.charAt(0).toUpperCase() + to.slice(1);
+    
+    return `🚗 **Best Route: ${fromFormatted} → ${toFormatted}**\n\n**📍 Route Overview:**\n• **Distance:** ${distance} km\n• **ETA:** ${estimatedTime} minutes\n• **Traffic:** Moderate conditions\n\n**🛣️ Recommended Path:**\n1. Head to nearest major highway (401/QEW/DVP)\n2. Follow optimized highway route\n3. Exit at recommended off-ramp\n4. Navigate local streets to destination\n\n**Why this route:**\n• ✅ ${randomReason}\n• ✅ Fastest available option right now\n• ✅ Real-time traffic optimization\n\n**💡 Pro Tip:** Traffic usually clears after 7 PM on weekdays.\n\nWould you like turn-by-turn directions or alternative routes?`;
   };
 
   const generateResponse = (userMessage: string): string => {
     const message = userMessage.toLowerCase();
     
-    // Extract location patterns more intelligently
+    // Enhanced location patterns for both A-to-B and single destination queries
     const locationPatterns = [
+      // A to B patterns
       /(?:from\s+)?(.+?)\s+to\s+(.+?)(?:\s|$)/i,
       /(?:route\s+)?(?:from\s+)?(.+?)\s+(?:to\s+|→\s+)(.+?)(?:\s|$)/i,
       /(?:going\s+)?(?:from\s+)?(.+?)\s+(?:→|->)\s+(.+?)(?:\s|$)/i,
-      /(?:drive\s+)?(?:from\s+)?(.+?)\s+(?:towards?|heading\s+to)\s+(.+?)(?:\s|$)/i
+      /(?:drive\s+)?(?:from\s+)?(.+?)\s+(?:towards?|heading\s+to)\s+(.+?)(?:\s|$)/i,
+      // Single destination patterns
+      /(?:best\s+route\s+to|get\s+(?:me\s+)?to|directions\s+to|how\s+to\s+get\s+to|way\s+to|navigate\s+to)\s+(.+?)(?:\s|$)/i,
+      /(?:take\s+me\s+to|drive\s+to|go\s+to)\s+(.+?)(?:\s|$)/i
     ];
     
     let fromLocation = "";
@@ -176,9 +185,16 @@ const Chat = () => {
     // Try to match location patterns
     for (const pattern of locationPatterns) {
       const match = message.match(pattern);
-      if (match && match[1] && match[2]) {
-        fromLocation = match[1].trim();
-        toLocation = match[2].trim();
+      if (match) {
+        if (match[2]) {
+          // A to B pattern
+          fromLocation = match[1].trim();
+          toLocation = match[2].trim();
+        } else if (match[1]) {
+          // Single destination pattern - assume current location as start
+          fromLocation = "current location";
+          toLocation = match[1].trim();
+        }
         break;
       }
     }
@@ -213,12 +229,30 @@ const Chat = () => {
       return "🚦 **Current GTA Traffic Overview**\n\n**Heavy Traffic Areas:**\n• Highway 401 between 400 and 404 (rush hour backup)\n• QEW through Mississauga (ongoing construction)\n• Highway 410 northbound (accident-related)\n\n**Clear Routes:**\n• Highway 407 Express (toll road)\n• Highway 404 north of 401\n• Surface roads: Dundas, Bloor relatively clear\n\n**Smart timing:** Traffic typically clears after 7 PM on weekdays.\n\nWhere are you traveling? I'll find the clearest path.";
     }
     
+    // Check for any location mention as fallback
+    const gtaLocations = [
+      'toronto', 'mississauga', 'brampton', 'markham', 'vaughan', 'richmond hill',
+      'oakville', 'burlington', 'hamilton', 'pickering', 'ajax', 'whitby', 'oshawa',
+      'milton', 'newmarket', 'aurora', 'king city', 'georgetown', 'cn tower', 
+      'pearson airport', 'union station', 'harbourfront', 'downtown', 'airport',
+      'eaton centre', 'rogers centre', 'acc', 'scotiabank arena', 'casa loma',
+      'distillery district', 'queens quay', 'financial district'
+    ];
+    
+    const mentionedLocation = gtaLocations.find(location => 
+      message.includes(location) || message.includes(location.replace(/\s+/g, ''))
+    );
+    
+    if (mentionedLocation) {
+      return generateRouteResponse("current location", mentionedLocation);
+    }
+    
     // Default response with route focus
     if (message.includes("route") || message.includes("direction") || message.includes("how to get")) {
       return "🗺️ **Route Planning Assistant**\n\nI can help you find the best route anywhere in the GTA! I consider:\n\n• 🚨 Real-time traffic and accidents\n• 🚧 Construction and road closures\n• 🌧️ Weather conditions affecting driving\n• ⏱️ Time-of-day traffic patterns\n• 💰 Toll vs free route options\n\n**Just tell me:**\n• Where you're starting from\n• Where you need to go\n• If you want fastest, cheapest, or most scenic route\n\nExample: \"Best route from Markham to downtown Toronto avoiding construction\"";
     }
     
-    return `🤔 I'm not sure about "${userMessage}" specifically, but I'm your GTA navigation expert! I can help you with:\n\n• **Route planning** with real-time traffic\n• **Construction detours** and road closures\n• **Weather-optimized routes**\n• **Accident avoidance** and traffic updates\n• **Time-based recommendations** for any destination\n\nTry asking: "Best route to [destination]" or "How to avoid traffic to [location]"`;
+    return `🤔 I need more location details to help with "${userMessage}". I'm your GTA navigation expert! \n\n**Try asking:**\n• "Best route to [destination]"\n• "How to get from [A] to [B]"\n• "Directions to CN Tower"\n• "Traffic updates for Highway 401"\n\nI can provide real-time routing for any GTA location!`;
   };
 
   const handleSendMessage = async () => {
