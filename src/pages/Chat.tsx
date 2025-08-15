@@ -10,8 +10,14 @@ import {
   Navigation,
   Bot,
   User,
-  Sparkles
+  Sparkles,
+  Route,
+  Car
 } from "lucide-react";
+import NavigationInterface from "@/components/NavigationInterface";
+import TollRouteToggle from "@/components/TollRouteToggle";
+import NavigationMap from "@/components/NavigationMap";
+import VoiceNavigationControls from "@/components/VoiceNavigationControls";
 
 interface Message {
   id: string;
@@ -25,20 +31,22 @@ const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      text: "Hi! I'm your GTA navigation assistant. I can help you find the best routes, avoid traffic, and explain why I chose specific paths to get you to your destination faster and safer. Where would you like to go?",
+      text: "🚗 **Welcome to AutoPilot GPT Enhanced** \n\nI'm your advanced GTA navigation assistant with toll route optimization, real-time turn-by-turn guidance, and voice navigation. I can:\n\n• 🛣️ Compare toll vs free routes with cost analysis\n• 🗣️ Provide voice-guided navigation\n• 📍 Show live traffic and construction updates\n• 🎯 Optimize routes for speed, cost, or scenery\n\nWhere would you like to navigate today?",
       isUser: false,
       timestamp: new Date(),
       suggestions: [
-        "Best route from Toronto to Mississauga",
-        "Avoid highway traffic to Brampton",
-        "Fastest way to Pearson Airport",
-        "Alternative routes due to construction"
+        "Navigate to Pearson Airport with toll options",
+        "Best route Toronto to Mississauga avoiding tolls",
+        "Turn-by-turn directions to CN Tower",
+        "Voice navigation to Union Station"
       ]
     }
   ]);
   
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [showNavigation, setShowNavigation] = useState(false);
+  const [navigationData, setNavigationData] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -298,6 +306,46 @@ const Chat = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const queryParam = urlParams.get('q');
     const message = queryParam || input;
+    
+    // Check if this should trigger navigation interface
+    const navigationTriggers = [
+      /navigate to|turn.by.turn|voice navigation|start navigation/i,
+      /toll options|compare routes|avoid tolls/i,
+      /enhanced navigation|autopilot|advanced route/i
+    ];
+    
+    const shouldShowNavigation = navigationTriggers.some(pattern => 
+      pattern.test(message.toLowerCase())
+    );
+    
+    if (shouldShowNavigation) {
+      // Extract locations for navigation
+      const locationPatterns = [
+        /(?:to|navigate to|directions to)\s+(.+?)(?:\s|$)/i,
+        /(?:from\s+)?(.+?)\s+to\s+(.+?)(?:\s|$)/i
+      ];
+      
+      let fromLoc = "Current Location";
+      let toLoc = "Destination";
+      
+      for (const pattern of locationPatterns) {
+        const match = message.match(pattern);
+        if (match) {
+          if (match[2]) {
+            fromLoc = match[1];
+            toLoc = match[2];
+          } else {
+            toLoc = match[1];
+          }
+          break;
+        }
+      }
+      
+      setNavigationData({ from: fromLoc, to: toLoc });
+      setShowNavigation(true);
+      
+      return `🚗 **Enhanced Navigation Activated**\n\nLaunching advanced navigation interface with:\n\n• **Route Options:** Toll vs Free comparison\n• **Voice Guidance:** Turn-by-turn instructions\n• **Real-time Updates:** Traffic and construction alerts\n• **Smart Routing:** Fastest, cheapest, or scenic options\n\nYour navigation interface is loading below...`;
+    }
     
     return generateResponse(message.toLowerCase());
   };
